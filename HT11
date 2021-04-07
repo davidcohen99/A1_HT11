@@ -1,0 +1,201 @@
+% Graphs for HT11C
+% by Group A1
+clc; clear;
+
+%% Import data from each exercise
+A = readmatrix('A1_HT11C_A.xls');
+B = readmatrix('A1_HT11C_B.xls');
+C = readmatrix('A1_HT11C_C.xls');
+D = readmatrix('A1_HT11C_D.xlsx');
+
+%% Exercise A
+ssTempsA = [];
+for i = 8:15
+    ssTempsA = [ssTempsA mean(A(150:160,i))];
+end
+
+% Figure 1 - T8 vs Time
+figure('Name','T8 vs Time')
+plot([1:160].*10,A(1:160,15),'b','LineWidth',1.5)
+hold on
+plot(1400,19.06,'k.','MarkerSize',30) % steady state point
+for i=1:160 % error bars
+    if mod(i,5)==0
+        errorbar(i.*10,A(i,15),1.1,'b','LineWidth',1.5)
+    end
+end
+
+title('Thermocouple 8 vs Time','FontSize',15);
+xlabel('Time (s)','FontSize',13);
+ylabel('Temperature (C)','FontSize',13);
+legend('T8','SS Point','Location','Southeast');
+hold off
+
+% Figure 2 - (A) Temperature Distribution between Thermocouples T1 - T8
+dist = [0 15 30 45 60 75 90 105]; 
+figure('Name','Thermocouples at Steady State vs Distance from Thermocouple 1 (A)')
+errorbar(dist,ssTempsA,ones(1,length(ssTempsA)).*1.1,'r-o','MarkerFaceColor','r','LineWidth',1.5)
+hold on
+text(dist,ssTempsA,{'T1','T2','T3','T4','T5','T6','T7','T8'},'VerticalAlignment','bottom','HorizontalAlignment','left')
+
+title('Temperature Distribution between Thermocouples','FontSize',15);
+xlabel('Distance from T1 (mm)','FontSize',13)
+ylabel('Temperature (C)','FontSize',13)
+hold off
+
+
+%% Exercise B
+ssTempsB = [];
+for i = 8:15
+    ssTempsB = [ssTempsB mean(B(180:189,i))];
+end
+% Figure 3 - T8 vs Time
+figure('Name','T8 vs Time')
+plot([1:160].*10,B(1:160,15),'b','LineWidth',1.5)
+hold on
+plot(1400,19.48,'k.','MarkerSize',30) % steady state point
+for i=1:160 % error bars
+    if mod(i,5)==0
+        errorbar(i.*10,B(i,15),1.1,'b','LineWidth',1.5)
+    end
+end
+
+title('Thermocouple 8 vs Time','FontSize',15);
+xlabel('Time (s)','FontSize',13);
+ylabel('Temperature (C)','FontSize',13);
+legend('T8','Location','Southeast');
+hold off
+
+% Figure 4 - (B) Temperature Distribution between Thermocouples T1 - T8
+dist = [0 15 30 45 60 75 90 105]; 
+figure('Name','Thermocouples at Steady State vs Distance from Thermocouple 1 (B)')
+errorbar(dist,ssTempsB,ones(1,length(ssTempsB)).*1.1,'r-o','MarkerFaceColor','r','LineWidth',1.5)
+hold on
+text(dist,ssTempsB,{'T1','T2','T3','T4','T5','T6','T7','T8'},'VerticalAlignment','bottom','HorizontalAlignment','left')
+
+title('Temperature Distribution between Thermocouples','FontSize',15);
+xlabel('Distance from T1 (mm)','FontSize',13)
+ylabel('Temperature (C)','FontSize',13)
+hold off
+
+
+%% Exercise C
+ssTempsC = [];
+for i = 8:15
+    ssTempsC = [ssTempsC mean(C(83:91,i))];
+end
+
+% Figure 5 - T8 vs Time
+figure('Name','T8 vs Time')
+plot([1:91].*10,C(1:91,15),'b','LineWidth',1.5)
+hold on
+plot(850,19.2551,'k.','MarkerSize',30) % steady state point
+for i=1:91 % error bars
+    if mod(i,5)==0
+        errorbar(i.*10,C(i,15),1.1,'b','LineWidth',1.5)
+    end
+end
+
+title('Thermocouple 8 vs Time','FontSize',15);
+xlabel('Time (s)','FontSize',13);
+ylabel('Temperature (C)','FontSize',13);
+legend('T8','SS Point','Location','Southeast');
+hold off
+
+% Linear temperature distribution, in the axial direction, for the cooling
+% section (T6, T7, T8)
+coefcoolC = polyfit(dist(6:end), ssTempsC(6:end),1);
+coolC = @(x) coefcoolC(1)*x +coefcoolC(2);
+figure('Name','Linear Temperature Distribution of Cooling Section (C)');
+fplot(coolC, 'b','LineWidth',1.5)
+hold on
+plot(dist(6)-7.5, coolC(dist(6)-7.5),'k.','MarkerSize',30)
+errorbar(dist(6:end),ssTempsC(6:end),ones(1,length(ssTempsC(6:end))).*1.1,'b-o','MarkerFaceColor','b','LineWidth',1.5);
+text(dist(6:end),ssTempsC(6:end),{'T6','T7','T8'},'VerticalAlignment','bottom','HorizontalAlignment','left');
+
+title('Linear Temperature Distribution for Cooling Section','FontSize',15);
+xlabel('Distance from T1 (mm)','FontSize',13)
+ylabel('Temperature (C)','FontSize',13)
+xlim([dist(6)-10 dist(end)])
+legend('Linear Temperature Distribution','Base of Sample')
+hold off
+
+% Linear temperature distribution, in the axial direction, for the heating
+% section (T1, T2, T3)
+coefhotC = polyfit(dist(1:3), ssTempsC(1:3),1);
+hotC = @(x) coefhotC(1)*x + coefhotC(2);
+figure('Name','Linear Temperature Distribution of Heating Section (C)');
+fplot(hotC, 'b','LineWidth',1.5)
+hold on
+plot(dist(3)+7.5, hotC(dist(3)+7.5),'k.','MarkerSize',30)
+errorbar(dist(1:3),ssTempsC(1:3),ones(1,length(ssTempsC(1:3))).*1.1,'b-o','MarkerFaceColor','b','LineWidth',1.5);
+text(dist(1:3),ssTempsC(1:3),{'T1','T2','T3'},'VerticalAlignment','bottom','HorizontalAlignment','left');
+
+title('Linear Temperature Distribution for Heating Section','FontSize',15);
+xlabel('Distance from T1 (mm)','FontSize',13)
+ylabel('Temperature (C)','FontSize',13)
+xlim([dist(1) dist(3)+10])
+legend('Linear Temperature Distribution','Base of Sample')
+hold off
+
+%% Exercise D
+ssTempsD = [];
+for i = 8:15
+    ssTempsD = [ssTempsD mean(D(205:214,i))];
+end
+
+% Figure 6 - T8 vs Time
+figure('Name','T8 vs Time')
+plot([1:215].*10,D(1:215,15),'b','LineWidth',1.5)
+hold on
+plot(1630,16.33,'k.','MarkerSize',30) % steady state point
+for i=1:214 % error bars
+    if mod(i,5)==0
+        errorbar(i.*10,D(i,15),1.1,'b','LineWidth',1.5)
+    end
+end
+
+title('Thermocouple 8 vs Time','FontSize',15);
+xlabel('Time (s)','FontSize',13);
+ylabel('Temperature (C)','FontSize',13);
+legend('T8','SS Point','Location','Southeast');
+hold off
+
+% Linear temperature distribution, in the axial direction, for the cooling
+% section (T6, T7, T8)
+coefcoolD = polyfit(dist(6:end), ssTempsD(6:end),1);
+coolD = @(x) coefcoolD(1)*x +coefcoolD(2);
+figure('Name','Linear Temperature Distribution of Cooling Section (D)');
+fplot(coolD, 'b','LineWidth',1.5)
+hold on
+plot(dist(6)-7.5, coolD(dist(6)-7.5),'k.','MarkerSize',30)
+errorbar(dist(6:end),ssTempsD(6:end),ones(1,length(ssTempsD(6:end))).*1.1,'bo','MarkerFaceColor','b','LineWidth',1.5);
+text(dist(6),ssTempsD(6),{'T6'},'VerticalAlignment','top','HorizontalAlignment','left');
+text(dist(7),ssTempsD(7),{'T7'},'VerticalAlignment','bottom','HorizontalAlignment','left');
+text(dist(8),ssTempsD(8),{'T8'},'VerticalAlignment','bottom','HorizontalAlignment','left');
+
+title('Linear Temperature Distribution for Cooling Section','FontSize',15);
+xlabel('Distance from T1 (mm)','FontSize',13)
+ylabel('Temperature (C)','FontSize',13)
+xlim([dist(6)-10 dist(end)])
+legend('Linear Temperature Distribution','Paper (cool side)')
+hold off
+
+% Linear temperature distribution, in the axial direction, for the heating
+% section (T1, T2, T3)
+coefhotD = polyfit(dist(1:3), ssTempsD(1:3),1);
+hotD = @(x) coefhotD(1)*x + coefhotD(2);
+figure('Name','Linear Temperature Distribution of Heating Section (D)');
+fplot(hotD, 'b','LineWidth',1.5)
+hold on
+plot(dist(3)+7.5, hotD(dist(3)+7.5),'k.','MarkerSize',30)
+errorbar(dist(1:3),ssTempsD(1:3),ones(1,length(ssTempsD(1:3))).*1.1,'bo','MarkerFaceColor','b','LineWidth',1.5);
+text(dist(1),ssTempsD(1),{'T1'},'VerticalAlignment','bottom','HorizontalAlignment','left');
+text(dist(2),ssTempsD(2),{'T2'},'VerticalAlignment','top','HorizontalAlignment','left');
+text(dist(3),ssTempsD(3),{'T3'},'VerticalAlignment','bottom','HorizontalAlignment','left');
+title('Linear Temperature Distribution for Heating Section','FontSize',15);
+xlabel('Distance from T1 (mm)','FontSize',13)
+ylabel('Temperature (C)','FontSize',13)
+xlim([dist(1) dist(3)+10])
+legend('Linear Temperature Distribution','Paper (hot side)')
+hold off
